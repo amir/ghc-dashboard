@@ -6,34 +6,25 @@ module Main where
 import Web.Scotty
 import Data.Aeson hiding (json)
 import GHC.Generics
+import Text.Read (readMaybe)
+import Data.Maybe (fromMaybe)
 import qualified Data.Text as T
 import qualified Data.Text.Lazy as TL
-import qualified Data.ByteString.Lazy as BSL
 
-import Data.Monoid (mconcat)
+import GitHub.Types
 
-data Hook = Hook {
-  name :: T.Text
-} deriving (Show, Eq, Generic)
+readEvent :: TL.Text -> Maybe GithubEventType
+readEvent e = readMaybe (TL.unpack $ TL.toTitle e)
 
-data WebhookPayload = WebhookPayload {
-  hook :: Hook
-} deriving (Show, Eq, Generic)
-
-instance ToJSON Hook
-instance FromJSON Hook
-
-instance ToJSON WebhookPayload
-instance FromJSON WebhookPayload
-
-githubWebhooks :: WebhookPayload -> TL.Text
-githubWebhooks g = TL.fromStrict $ name (hook g)
+act :: Object -> GithubEventType -> Maybe TL.Text
+act payload event = Just $ TL.pack (show event)
 
 app :: ScottyM ()
 app = 
   post "/github-webhooks" $ do
-    b <- jsonData :: ActionM WebhookPayload
-    text $ githubWebhooks b
+    b  <- jsonData
+    e  <- header "X-Github-Event"
+    text $ fromMaybe (TL.pack "") ((e >>= readEvent) >>= act b)
 
 main :: IO ()
 main = scotty 8080 app
