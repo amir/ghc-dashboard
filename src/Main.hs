@@ -5,6 +5,7 @@ module Main where
 
 import Web.Scotty
 import Data.Aeson
+import Data.Aeson.Types
 import Data.Monoid ((<>))
 import GHC.Generics
 import GitHub.Data.Issues
@@ -18,16 +19,13 @@ import qualified Data.ByteString.Lazy as BL
 import qualified Data.ByteString.Builder as B
 import qualified Data.Text.Lazy.Encoding as E
 
-data WHIssueComment = WHIssueComment {
-  action :: T.Text
-} deriving (Show, Generic)
-
-instance ToJSON WHIssueComment
-instance FromJSON WHIssueComment
-
 act :: BL.ByteString -> RepoWebhookEvent -> TL.Text
 act body WebhookIssueCommentEvent =
-  TL.pack $ show $ fmap action (decode body)
+  TL.pack $ show $ fmap issueCommentBody (comment body)
+  where
+    comment c = do
+      result <- decode c
+      flip parseMaybe result $ flip (.:) "comment"
 
 act _    event = TL.pack $ show event
 
