@@ -9,18 +9,25 @@ import Control.Applicative
 
 import qualified Data.Text as T
 
-data CommandType = FCP deriving Show
+data CommandType = CommandFCP
+                   deriving Show
+
+data CommandParamType = ParamClose
+                        deriving Show
 
 data Mention = Mention {
     bot            :: T.Text
   , command        :: CommandType
-  , commandParams  :: [String]
+  , commandParams  :: CommandParamType
 } deriving Show
 
 type Mentions = [Mention]
 
 commandTypeParser :: Parser CommandType
-commandTypeParser = string "fcp" >> return FCP
+commandTypeParser = asciiCI "fcp" >> return CommandFCP
+
+commandParamParser :: CommandType -> Parser CommandParamType
+commandParamParser CommandFCP = asciiCI "close" >> return ParamClose
 
 mentionParser :: Parser Mention
 mentionParser = do
@@ -29,7 +36,8 @@ mentionParser = do
   skipSpace
   c <- commandTypeParser
   skipSpace
-  p <- many' (letter <|> digit) `sepBy` many1 space
+  p <- commandParamParser c
+  skipSpace <* endOfInput
   return Mention { bot = b, command = c, commandParams = p }
 
 parseIssueCommentBody   :: T.Text -> Mentions
