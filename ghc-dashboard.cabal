@@ -24,8 +24,8 @@ executable ghc-dashboard
                      , text       ==  1.2.2.1
                      , aeson      ==  1.1.0.0
                      , github     ==   0.15.0
-                     , parsec     ==   3.1.11
                      , scotty     ==   0.11.0
+                     , attoparsec == 0.13.1.0
                      , bytestring == 0.10.8.1
                      , http-types ==    0.9.1
   hs-source-dirs:      src

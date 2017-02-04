@@ -1,4 +1,3 @@
-{-# LANGUAGE DeriveGeneric     #-}
 {-# LANGUAGE OverloadedStrings #-}
 
 module Main where
@@ -7,22 +6,23 @@ import Web.Scotty
 import Data.Aeson
 import Data.Aeson.Types
 import Data.Monoid ((<>))
-import GHC.Generics
 import GitHub.Data.Issues
 import GitHub.Data.Webhooks
 import GitHub.Data.Webhooks.Validate
 import Network.HTTP.Types.Status
 
-import qualified Data.Text as T
 import qualified Data.Text.Lazy as TL
 import qualified Data.ByteString.Lazy as BL
 import qualified Data.ByteString.Builder as B
 import qualified Data.Text.Lazy.Encoding as E
 
+import Mentions
+
 act :: BL.ByteString -> RepoWebhookEvent -> TL.Text
 act body WebhookIssueCommentEvent =
-  TL.pack $ show $ fmap issueCommentBody (comment body)
+  TL.pack $ show $ fmap parseIssueCommentBody commentBody
   where
+    commentBody = fmap issueCommentBody (comment body)
     comment c = do
       result <- decode c
       flip parseMaybe result $ flip (.:) "comment"
