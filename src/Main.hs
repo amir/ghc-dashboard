@@ -21,15 +21,13 @@ import qualified Data.Text.Lazy.Encoding as E
 import Mentions
 
 act :: BL.ByteString -> RepoWebhookEvent -> ActionM ()
-act body WebhookIssueCommentEvent = do
+act body WebhookIssueCommentEvent =
   case action of
     Just a -> do
-      dfasdfas <- liftIO a
-      case dfasdfas of
-        Right r -> do
-          text $ TL.pack $ show r
-        Left e -> do
-          text $ TL.pack $ show e
+      actionResult <- liftIO a
+      case actionResult of
+        Right r -> text $ TL.pack $ show r
+        Left  e -> text $ TL.pack $ show e
     Nothing ->
       status badRequest400
   where
@@ -50,7 +48,7 @@ act body WebhookIssueCommentEvent = do
 act _    event = text $ TL.pack $ show event
 
 app :: ScottyM ()
-app = do
+app =
   post "/github-webhooks" $ do
     b <- body
     s <- header "X-Hub-Signature"
