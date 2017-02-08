@@ -9,6 +9,7 @@ module Model where
 
 import Database.Persist
 import Database.Persist.TH
+import Data.Text
 import Data.Time
 
 share [mkPersist sqlSettings, mkMigrate "migrateAll"] [persistLowerCase|
@@ -22,31 +23,67 @@ Milestone
   description String
   openIssues Int
   closedIusses Int
-  closedAt UTCTime
+  repository String
   createdAt UTCTime
   updatedAt UTCTime
-  dueOn UTCTime
+  dueOn UTCTime Maybe
+  closedAt UTCTime Maybe
   creator GithubUserId
 Issue
+  number Int
   milestoneId MilestoneId
   creator GithubUserId
   assignee GithubUserId
   open Bool
   isPullRequest Bool
   title String
+  labels [String]
   body String
   locked Bool
-  closedAt UTCTime
+  repository String
+  closedAt UTCTime Maybe
   createdAt UTCTime
   updatedAt UTCTime
-IssueLabel
-  issue IssueId
-  label String
-  color String
 IssueComment
   issue IssueId
   creator GithubUserId
   body String
+  repository String
   createdAt UTCTime
   updatedAt UTCTime
+PullRequest
+  number Int
+  state String
+  title String
+  body String
+  assignee GithubUserId
+  milestone MilestoneId
+  locked Bool
+  commits Int
+  additions Int
+  deletions Int
+  changedFiles Int
+  repository String
+  createdAt UTCTime
+  updatedAt UTCTime
+  closedAt UTCTime Maybe
+  mergedAt UTCTime Maybe
+Release
+  date UTCTime
+  released Bool
+Build
+  number Int
+  builderName String
+  successful Bool
+  message Text
+  durationSeconds Int
+  startTime UTCTime Maybe
+  endTime UTCTime Maybe
+Team
+  name String
+  mention String
+  label String
+Membership
+  member GithubUserId
+  team TeamId
 |]
