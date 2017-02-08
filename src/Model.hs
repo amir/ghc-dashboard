@@ -16,37 +16,37 @@ GithubUser
   login String
   deriving Show
 Milestone
-	number Int
-	open Bool
-	title String
-	description String
-	openIssues Int
-	closedIusses Int
-	closedAt UTCTime
-	createdAt UTCTime
-	updatedAt UTCTime
-	dueOn UTCTime
-	creator GithubUserId
+  number Int
+  open Bool
+  title String
+  description String
+  openIssues Int
+  closedIusses Int
+  closedAt UTCTime
+  createdAt UTCTime
+  updatedAt UTCTime
+  dueOn UTCTime
+  creator GithubUserId
 Issue
-	milestoneId MilestoneId
-	creator GithubUserId
-	assignee GithubUserId
-	open Bool
+  milestoneId MilestoneId
+  creator GithubUserId
+  assignee GithubUserId
+  open Bool
   isPullRequest Bool
-	title String
-	body String
-	locked Bool
-	closedAt UTCTime
-	createdAt UTCTime
-	updatedAt UTCTime
+  title String
+  body String
+  locked Bool
+  closedAt UTCTime
+  createdAt UTCTime
+  updatedAt UTCTime
 IssueLabel
-	issue IssueId
-	label String
-	color String
+  issue IssueId
+  label String
+  color String
 IssueComment
-	issue IssueId
-	creator GithubUserId
-	body String
-	createdAt UTCTime
-	updatedAt UTCTime
+  issue IssueId
+  creator GithubUserId
+  body String
+  createdAt UTCTime
+  updatedAt UTCTime
 |]
