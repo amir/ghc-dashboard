@@ -6,14 +6,17 @@ import Data.Char (isSpace)
 import Data.Either (rights)
 import Data.Attoparsec.Text
 import Control.Applicative
+import GitHub.Data (mkOwnerName, mkRepoName)
 
 import qualified Data.Text as T
 
 import qualified GitHub.Auth as Github
 import qualified GitHub.Data.Issues as Github
+import qualified GitHub.Data.URL as Github
 import qualified GitHub.Endpoints.Issues as Github
 import qualified GitHub.Data.Id as Github
 import qualified GitHub.Data.Options as Github
+import qualified GitHub.Data as Github
 
 data CommandType = CommandFCP
                    deriving Show
@@ -29,10 +32,10 @@ data Mention = Mention {
 
 type Mentions = [Mention]
 
-actOnMention :: Github.Auth -> Maybe Github.Issue -> Mention ->
+actOnMention :: Github.Auth -> Github.Name Github.Owner -> Github.Name Github.Repo -> Github.Id Github.Issue -> Mention ->
   IO (Either Github.Error Github.Issue)
-actOnMention auth issue (Mention _ CommandFCP ParamClose) =
-  Github.editIssue auth "amir" "ghc-proposals" (Github.Id 1) edit
+actOnMention auth owner repo giid (Mention _ CommandFCP ParamClose) = do
+  Github.editIssue auth owner repo giid edit
   where
     edit = Github.editOfIssue { Github.editIssueState = Just Github.StateClosed }
 
