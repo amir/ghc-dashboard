@@ -2,15 +2,15 @@
 
 module Webhooks where
 
+import Data.Aeson
+import Data.Aeson.Types
 import GitHub.Auth
 import GitHub.Data.Issues
 import GitHub.Data.Webhooks
-import Web.Scotty.Trans (ActionT, status, text)
-import Control.Monad.IO.Class (liftIO)
 import Network.HTTP.Types.Status
-import Data.Aeson
-import Data.Aeson.Types
+import Control.Monad.IO.Class (liftIO)
 import Data.Maybe (fromMaybe, listToMaybe)
+import Web.Scotty.Trans (ActionT, status, text)
 
 import qualified Data.Text as T
 import qualified Data.Text.Lazy as TL

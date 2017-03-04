@@ -2,16 +2,16 @@
 
 module Main where
 
-import Web.Scotty.Trans (ScottyT, scottyOptsT, post, json, text, header, body, status)
-import Data.Default.Class (def)
 import Data.Aeson
-import Data.Aeson.Types hiding (Options)
+import Data.Aeson.Types
 import Data.Monoid ((<>))
 import GitHub.Auth
 import GitHub.Data.Webhooks
 import GitHub.Data.Webhooks.Validate
+import Data.Default.Class (def)
 import Network.HTTP.Types.Status
-import Control.Monad.Reader (Reader, runReaderT, runReader, asks, lift)
+import Control.Monad.Reader (runReaderT, asks, lift)
+import Web.Scotty.Trans (ScottyT, scottyOptsT, post, header, body, status)
 
 import qualified Data.Text.Lazy as TL
 import qualified Data.ByteString.Lazy as BL
@@ -44,7 +44,7 @@ githubWebhooksA = do
     isValid se si bo = isValidPayload se (fmap TL.toStrict si) (BL.toStrict bo)
 
 application :: Config -> ScottyT Error ConfigM ()
-application c = do
+application c =
   post "/github-webhooks" githubWebhooksA
 
 runApplication :: Config -> IO ()
