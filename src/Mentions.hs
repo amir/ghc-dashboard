@@ -34,7 +34,7 @@ type Mentions = [Mention]
 
 actOnMention :: Github.Auth -> Github.Name Github.Owner -> Github.Name Github.Repo -> Github.Id Github.Issue -> Mention ->
   IO (Either Github.Error Github.Issue)
-actOnMention auth owner repo giid (Mention _ CommandFCP ParamClose) = do
+actOnMention auth owner repo giid (Mention _ CommandFCP ParamClose) =
   Github.editIssue auth owner repo giid edit
   where
     edit = Github.editOfIssue { Github.editIssueState = Just Github.StateClosed }
