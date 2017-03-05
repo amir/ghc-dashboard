@@ -14,6 +14,7 @@ import qualified GitHub.Auth as Github
 import qualified GitHub.Data.Issues as Github
 import qualified GitHub.Data.URL as Github
 import qualified GitHub.Endpoints.Issues as Github
+import qualified GitHub.Endpoints.Issues.Comments as Github
 import qualified GitHub.Data.Id as Github
 import qualified GitHub.Data.Options as Github
 import qualified GitHub.Data as Github
@@ -22,7 +23,8 @@ data CommandType = CommandFCP
                    deriving Show
 
 data CommandParamType = ParamClose
-                        deriving Show
+                      | ParamMerge
+                      deriving Show
 
 data Mention = Mention {
     bot            :: T.Text
@@ -39,11 +41,19 @@ actOnMention auth owner repo giid (Mention _ CommandFCP ParamClose) =
   where
     edit = Github.editOfIssue { Github.editIssueState = Just Github.StateClosed }
 
+actOnMention auth owner repo giid (Mention _ CommandFCP ParamMerge) = do
+  _ <- Github.createComment auth owner repo giid edit
+  Github.issue owner repo giid
+  where
+    edit = "no merge for you today"
+
 commandTypeParser :: Parser CommandType
 commandTypeParser = asciiCI "fcp" >> return CommandFCP
 
 commandParamParser :: CommandType -> Parser CommandParamType
-commandParamParser CommandFCP = asciiCI "close" >> return ParamClose
+commandParamParser CommandFCP =
+     (asciiCI "close" >> return ParamClose)
+ <|> (asciiCI "merge" >> return ParamMerge)
 
 mentionParser :: Parser Mention
 mentionParser = do
