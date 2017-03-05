@@ -14,12 +14,11 @@ import Data.Time
 
 share [mkPersist sqlSettings, mkMigrate "migrateAll"] [persistLowerCase|
 GithubUser
-  login String
+  login Text
   deriving Show
 Team
-  name String
-  mention String
-  label String
+  name Text
+  mention Text
 Membership
   member GithubUserId
   team TeamId
