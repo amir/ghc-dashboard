@@ -2,8 +2,6 @@
 
 import Control.Monad.IO.Class (liftIO)
 
-import GitHub.Data.Definitions
-
 import Database.Persist as DB
 import Database.Persist.Sqlite as DB
 import Data.Vector
@@ -27,7 +25,7 @@ migrateSchema c =
 runQuery :: Config -> DB.SqlPersistT IO a -> IO a
 runQuery c q = DB.runSqlPool q (pool c)
 
-teamMembers :: Github.Auth -> Github.Id Github.Team -> IO (Either Github.Error (Vector SimpleUser))
+teamMembers :: Github.Auth -> Github.Id Github.Team -> IO (Either Github.Error (Vector Github.SimpleUser))
 teamMembers a team = Github.executeRequest a $
   Github.listTeamMembersR team Github.TeamMemberRoleAll Github.FetchAll
 
@@ -49,17 +47,17 @@ main = do
   case members of
     Right ms ->
       forM_ ms $ \m ->
-        runQuery c (DB.insertKey (getUserKey m) (GithubUser (Github.untagName (simpleUserLogin m))))
+        runQuery c (DB.repsert (getUserKey m) (GithubUser (Github.untagName (Github.simpleUserLogin m))))
 
   teams <- Github.teamsOf' (Just $ auth c) "amirghc"
   case teams of
     Right ts ->
       forM_ ts $ \t -> do
-        runQuery c (DB.insertKey (getTeamKey t)
+        runQuery c (DB.repsert (getTeamKey t)
           (Team (Github.simpleTeamName t) (Github.untagName (Github.simpleTeamSlug t))))
 
         members <- teamMembers (auth c) (Github.simpleTeamId t)
         case members of
           Right ms ->
             forM_ ms $ \m ->
-              runQuery c (DB.insert (Membership (getUserKey m) (getTeamKey t)))
+              runQuery c (DB.insertUnique (Membership (getUserKey m) (getTeamKey t)))
