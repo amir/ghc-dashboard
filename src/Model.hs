@@ -22,4 +22,5 @@ Team
 Membership
   member GithubUserId
   team TeamId
+  TeamMember member team
 |]
